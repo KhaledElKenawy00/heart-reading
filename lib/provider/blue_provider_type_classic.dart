@@ -12,16 +12,63 @@ class BleScanProviderTypeCLASSIC extends ChangeNotifier {
   final StreamController<Map<String, dynamic>> _dataStreamController =
       StreamController<Map<String, dynamic>>.broadcast();
 
+  List<Map<String, dynamic>> _allSensorData = []; // All data from DB
+  List<Map<String, dynamic>> sensorData = []; // Current page data
+
+  int _currentPage = 0;
+  final int _pageSize = 10;
+
+  /// Load all sensor data from the database and initialize the first page
+  Future<void> loadSensorDataFromDatabase() async {
+    try {
+      final allData = await DatabaseHelper.instance.getAllSensorData();
+      _allSensorData = allData;
+      _setPaginatedSensorData();
+      print("✅ Sensor data loaded from the database.");
+    } catch (e) {
+      print("❌ Failed to load sensor data from the database: $e");
+    }
+  }
+
+  /// Called from UI to load data when the screen opens
+  Future<void> loadPageData() async {
+    await loadSensorDataFromDatabase();
+  }
+
+  /// Go to previous page
+  void previousPage() {
+    if (_currentPage > 0) {
+      _currentPage--;
+      _setPaginatedSensorData();
+    }
+  }
+
+  /// Go to next page
+  void nextPage() {
+    final maxPage = (_allSensorData.length / _pageSize).ceil() - 1;
+    if (_currentPage < maxPage) {
+      _currentPage++;
+      _setPaginatedSensorData();
+    }
+  }
+
+  /// Update `sensorData` with paginated content
+  void _setPaginatedSensorData() {
+    final start = _currentPage * _pageSize;
+    final end = start + _pageSize;
+    sensorData = _allSensorData.sublist(
+      start,
+      end > _allSensorData.length ? _allSensorData.length : end,
+    );
+    notifyListeners();
+  }
+
   List<Device> _pairedDevices = [];
   Device? _device;
   bool _isConnected = false;
   String buffer = "";
 
-  // Pagination variables
-  int _currentPage = 1;
-  final int _pageSize = 10; // Number of records per page
   List<Map<String, dynamic>> _sensorData = [];
-  List<Map<String, dynamic>> get sensorData => _sensorData;
 
   BleScanProviderTypeCLASSIC() {
     fetchPairedDevices();
@@ -144,35 +191,22 @@ class BleScanProviderTypeCLASSIC extends ChangeNotifier {
     }
   }
 
-  /// Fetch data for the current page
-  Future<void> fetchSensorData() async {
-    try {
-      final data = await DatabaseHelper.instance.getSensorDataPaged(
-        _currentPage,
-        _pageSize,
-      );
-      _sensorData = data;
+  int _itemsPerPage = 10; // adjust as needed
 
-      print("✅ Data fetched for page $_currentPage: $_sensorData");
-
-      notifyListeners();
-    } catch (e) {
-      print("❌ Error fetching data: $e");
-    }
+  void setAllSensorData(List<Map<String, dynamic>> allData) {
+    _allSensorData = allData;
+    _currentPage = 0;
+    _updatePage();
   }
 
-  /// Move to the next page
-  void nextPage() {
-    _currentPage++;
-    fetchSensorData();
-  }
-
-  /// Move to the previous page
-  void previousPage() {
-    if (_currentPage > 1) {
-      _currentPage--;
-      fetchSensorData();
-    }
+  void _updatePage() {
+    final start = _currentPage * _itemsPerPage;
+    final end = start + _itemsPerPage;
+    _sensorData = _allSensorData.sublist(
+      start,
+      end > _allSensorData.length ? _allSensorData.length : end,
+    );
+    notifyListeners();
   }
 
   @override

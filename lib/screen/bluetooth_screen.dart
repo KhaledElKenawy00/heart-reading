@@ -69,43 +69,58 @@ class _AvailableDevicesScreenState extends State<AvailableDevicesScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                device.name ?? 'Unknown Device',
-                                style: TextStyle(
-                                  fontFamily: "lemonada",
-                                  color: Colors.black,
-                                  fontSize: Dimentions.fontPercentage(
-                                    context,
-                                    3,
-                                  ),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(
-                                height: Dimentions.hightPercentage(
-                                  context,
-                                  0.5,
-                                ),
-                              ),
-                              Text(
-                                device.address,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w100,
-                                  fontFamily: "lemonada",
-                                  color: Colors.blueGrey,
-                                  fontSize: Dimentions.fontPercentage(
-                                    context,
-                                    3,
+                          Expanded(
+                            // Allow the text to take up all available space
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+
+                              children: [
+                                Text(
+                                  device.name ?? 'Unknown Device',
+                                  maxLines: 2, // Limiting the number of lines
+                                  overflow:
+                                      TextOverflow
+                                          .ellipsis, // Show ellipsis if it overflows
+                                  softWrap: true, // Ensures wrapping
+                                  style: TextStyle(
+                                    fontFamily: "lemonada",
+                                    color: Colors.black,
+                                    fontSize: Dimentions.fontPercentage(
+                                      context,
+                                      1.6,
+                                    ),
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              ),
-                            ],
+                                SizedBox(
+                                  height: Dimentions.hightPercentage(
+                                    context,
+                                    0.5,
+                                  ),
+                                ),
+                                Text(
+                                  device.address,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w100,
+                                    fontFamily: "lemonada",
+                                    color: Colors.blueGrey,
+                                    fontSize: Dimentions.fontPercentage(
+                                      context,
+                                      2,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          Image.asset("assets/bluetooth.png"),
+                          // Use `Image.asset` for Bluetooth icon, but make sure it doesn't overflow
+                          Image.asset(
+                            "assets/bluetooth.png",
+                            height: Dimentions.hightPercentage(
+                              context,
+                              8,
+                            ), // Adjust height as needed
+                          ),
                         ],
                       ),
                     ),

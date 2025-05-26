@@ -331,7 +331,7 @@ class _BluetoothClassicHomePageState extends State<BluetoothClassicHomePage> {
                           style: TextStyle(
                             fontFamily: "lemonada",
                             color: Colors.white,
-                            fontSize: Dimentions.fontPercentage(context, 1.5),
+                            fontSize: Dimentions.fontPercentage(context, 1),
                             fontWeight: FontWeight.bold,
                           ),
                         ),

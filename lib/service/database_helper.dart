@@ -46,21 +46,8 @@ class DatabaseHelper {
     );
   }
 
-  Future<List<Map<String, dynamic>>> getSensorDataPaged(
-    int page,
-    int pageSize,
-  ) async {
-    final db = await instance.database;
-
-    // Calculate offset
-    final offset = (page - 1) * pageSize;
-
-    // Fetch data sorted by date and time (latest first)
-    return await db.query(
-      'sensor_data',
-      orderBy: 'date DESC, time DESC',
-      limit: pageSize,
-      offset: offset,
-    );
+  Future<List<Map<String, dynamic>>> getAllSensorData() async {
+    final db = await database;
+    return await db.query('sensor_data', orderBy: 'id DESC');
   }
 }
